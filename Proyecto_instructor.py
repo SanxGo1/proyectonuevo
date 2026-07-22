@@ -178,3 +178,10 @@ def Menu():
                     print(f"✅ Éxito: El vehículo {placa_liberar} ha sido devuelto y ahora está Disponible para otros instructores.")
             else:
                 print(f"❌ Error: La placa {placa_liberar} no está registrada en el sistema de {registro_especialidad}S.")
+        
+        elif opcion == 7:
+            print("Saliendo del menú del instructor.")
+            break
+            
+        else:
+            print("Opción inválida, ingrese una de las opciones disponibles en el menu")
