@@ -68,7 +68,7 @@ def apartar_cita():
             return
         while True:
             try:    
-                fecha=datetime.strptime(input("Introduce la fecha (DD/MM/AAAA): "), "%d/%m/%Y")
+                fecha=datetime.strptime(input("Introduce la fecha (DD/MM/AAAA): "), "%d/%m/%Y").date()
                 print("¡Fecha guardada con éxito!")
                 print("Fecha registrada:", fecha.strftime("%d/%m/%Y"))
                 print("-"*30)
@@ -78,7 +78,7 @@ def apartar_cita():
                 print("-"*30)
         while True:
             try:
-                hora = datetime.strptime(input("Introduce la hora (HH:MM): "), "%H:%M")
+                hora = datetime.strptime(input("Introduce la hora (HH:MM): "), "%H:%M").time()
                 
                 print("¡Hora guardada con éxito!")
                 print("Hora registrada:", hora.strftime("%H:%M"))
@@ -98,8 +98,8 @@ def apartar_cita():
             "tipo": tipo,
             "placa": placa_elegida,
             "instructor": vehiculos[placa_elegida].get("instructor_asignado", "Pendiente de asignar"),
-            "fecha": fecha,
-            "hora": hora
+            "fecha": fecha.strftime("%d/%m/%Y"),
+            "hora": hora.strftime("%H:%M")
         }
         
         citas.append(nueva_cita)
@@ -115,7 +115,10 @@ def apartar_cita():
 def consultar_citas():
     print("\n--- Mis Citas Programadas ---")
     documento = input("Ingrese su documento de identidad: ").strip()
-    
+    if not documento.isdigit():
+        print("No es un documento valido o ingrese correctamente su documento o si esta registrando alguna letra")
+        print("-"*30)
+        return
     citas = cargar_json("citas.json", [])
     
     citas_alumno = [cita for cita in citas if cita["documento"] == documento]
@@ -125,6 +128,7 @@ def consultar_citas():
             print(f"{i}. Fecha: {cita['fecha']} | Hora: {cita['hora']} | Vehículo: {cita['placa']} ({cita['tipo']}) | Instructor: {cita['instructor']}")
     else:
         print("Usted no tiene citas programadas actualmente.")
+        print("-"*30)
 
 def menuClientes():
     while True:
