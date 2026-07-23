@@ -4,6 +4,9 @@ def registrar_alumno():
     try:
         print("\n--- Registro de Alumno ---")
         nombre = input("Ingrese su nombre completo: ").strip().upper()
+        nombres_registrados = [datos["nombre"] for datos in clientes.values()]
+        if nombre in nombres_registrados:
+            raise ValueError("Error: Este nombre ya se encuentra registrado en el sistema. Intente con otro o verifique si ya tiene cuenta.")
         if not nombre.replace(" ", "").isalpha():
             raise ValueError("Error: El nombre solo puede contener letras, sin números ni caracteres especiales.")
         documento = input("Ingrese su documento de identidad: ").strip()
@@ -28,12 +31,16 @@ def apartar_cita():
         documento = input("Ingrese su documento de identidad para validar su registro: ").strip()
         if not documento.isdigit():
                 raise  ValueError("Error no puede haber letras en el documento")
+        if not documento.isdigit() or len(documento) < 6:
+            print("Error: Documento inválido. Debe contener solo números y tener un mínimo de 6 dígitos.")
+            print("-"*30)
+            return
         clientes = cargar_json("clientes.json", {})
         if documento not in clientes:
             print("Error: No está registrado. Por favor, regístrese primero (Opción 1).")
             print("-"*30)
             return
-            
+        
         nombre_alumno = clientes[documento]["nombre"]
         
         datos_vehiculos = cargar_json("vehiculos.json", {"carros": {}, "motos": {}})
