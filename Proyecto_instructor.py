@@ -49,7 +49,7 @@ def Menu():
 
                     if nombre_instructor.isdigit():
                         raise ValueError("No se permiten valores numéricos para el nombre del instructor.")
-                    break # Si todo está bien, rompe el ciclo y continúa
+                    break 
                 except ValueError as e:
                     print("\n" + "="*50)
                     print(f"❌ TIPO DE ERROR: {type(e).__name__}")
@@ -64,7 +64,7 @@ def Menu():
                     print(f"Instructor {nombre_instructor} registrado con especialidad en {registro_especialidad}")
                     break    
                 else:
-                    print("Error: Digite Moto o Carro, no un número o decimal.")
+                    print("Error: Digite Moto o Carro, no un número o decimal o palabra ajena (carro o moto).")
                     
         elif opcion == 2:
             if not nombre_instructor or not registro_especialidad:
@@ -119,23 +119,40 @@ def Menu():
             if citas_encontradas:
                 print(f"\n--- Citas encontradas para el cliente: {nombre_cliente} ---")
                 for i, cita in enumerate(citas_encontradas, 1):
+                    # CORRECCIÓN 1: La línea estaba cortada, faltaba cerrar el string y el paréntesis de print
                     print(f"Cita {i}: Fecha: {cita['fecha']} | Hora: {cita['hora']} | Instructor asignado: {cita['instructor']} | Vehículo: {cita['placa']} ({cita['tipo']})")
             else:
                 print(f"No se encontró ninguna cita registrada a nombre de {nombre_cliente}.")
-                
         elif opcion == 4:
             nombre_cliente = input("Ingrese el nombre del cliente: ").strip().upper()
+            
             if nombre_cliente not in asistencias_por_cliente:
                 asistencias_por_cliente[nombre_cliente] = []
+                
         
-            asistencia = input(f"Ingrese la asistencia de {nombre_cliente} (Coloque 'Presente' o 'Ausente'): ").strip()
+        
+            while True:
+                # 1. Se le pide que ingrese la asistencia
+                asistencia = input(f"Ingrese la asistencia de {nombre_cliente} ('Presente' o 'Ausente'): ").strip().upper()
+                
+                # 2. JUSTO CUANDO INGRESA EL DATO, el programa verifica:
+                if asistencia == "PRESENTE" or asistencia == "AUSENTE":
+                    # Si escribió exactamente una de esas dos opciones (como string), el bucle se rompe y avanza.
+                    break  
+                else:
+                    # Si escribió un número (ej: "1"), otra palabra (ej: "hola") o lo dejó vacío, 
+                    # le lanza el error inmediatamente y LE VUELVE A PREGUNTAR arriba.
+                    print("❌ Error: Entrada inválida. Solo se admite escribir 'Presente' o 'Ausente'.\n")
+            # --------------------------------
+            
+            # 3. Solo si pasó la prueba anterior, llega a esta parte:
             observacion = input("Ingrese si tiene alguna observación del cliente: ").strip()
             
             registro = {"estado": asistencia, "observacion": observacion}
             asistencias_por_cliente[nombre_cliente].append(registro)
-            
+    
             guardar_json("asistencias.json", asistencias_por_cliente) 
-            print(f"Asistencia guardada con éxito para {nombre_cliente}.")
+            print(f"✅ Asistencia guardada con éxito para {nombre_cliente}.")
             
         elif opcion == 5:
             cliente_buscar = input("Ingrese el nombre del cliente para ver su historial: ").strip().upper()
@@ -169,6 +186,7 @@ def Menu():
                  
                 elif vehiculo.get("instructor_asignado") != nombre_instructor:
                     instructor_actual = vehiculo.get('instructor_asignado')
+                    # CORRECCIÓN 3: La línea estaba cortada al final
                     print(f"❌ Error Acceso Denegado: No puedes liberar este vehículo porque está asignado a '{instructor_actual}'. (Tu nombre registrado es '{nombre_instructor}').")
                 
                 else:
