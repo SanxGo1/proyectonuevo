@@ -4,8 +4,8 @@ def registrar_alumno():
     try:
         print("\n--- Registro de Alumno ---")
         nombre = input("Ingrese su nombre completo: ").strip().upper()
-        if any(char.isdigit() for char in nombre):
-            raise ValueError("Error: no puede haber números en el nombre")
+        if not nombre.replace(" ", "").isalpha():
+            raise ValueError("Error: El nombre solo puede contener letras, sin números ni caracteres especiales.")
         documento = input("Ingrese su documento de identidad: ").strip()
         if not documento.isdigit():
             raise  ValueError("Error no puede haber letras en el documento")
@@ -60,7 +60,7 @@ def apartar_cita():
             print("-"*30)
             return
             
-        placa_elegida = input("\nIngrese la placa del vehículo con el que desea practicar: ").strip()
+        placa_elegida = input("\nIngrese la placa del vehículo con el que desea practicar(ejemplo:ABC123): ").strip().upper()
         
         if placa_elegida not in vehiculos:
             print("Error: La placa ingresada no existe en la lista.")
@@ -121,8 +121,9 @@ def apartar_cita():
         }
         
         citas.append(nueva_cita)
+        print("DEBUG: Intentando guardar en el JSON...")
         guardar_json("citas.json", citas)
-        
+        print("DEBUG: ¡Guardado con éxito en el archivo!")
         print("\n¡Cita agendada con éxito!")
         print(f"Detalles: {fecha.strftime('%d/%m/%Y')} a las {hora.strftime('%H:%M')} - Vehículo: {placa_elegida}")
         print("-"*30)
