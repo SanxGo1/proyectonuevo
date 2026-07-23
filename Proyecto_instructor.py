@@ -3,14 +3,14 @@ from guardar_datos import cargar_json, guardar_json
 def Menu():
     datos_vehiculos = cargar_json("vehiculos.json", {
         "carros": {
-            "1234": {"nombre": "Carro A", "disponibilidad": "Disponible"},
-            "5678": {"nombre": "Carro B", "disponibilidad": "Disponible"},
-            "9101": {"nombre": "Carro C", "disponibilidad": "Disponible"}
+            "ABC123": {"nombre": "Carro A", "disponibilidad": "Disponible"},
+            "BII678": {"nombre": "Carro B", "disponibilidad": "Disponible"},
+            "WTF101": {"nombre": "Carro C", "disponibilidad": "Disponible"}
         },
         "motos": {
-            "1122": {"nombre": "Moto A", "disponibilidad": "Disponible"},
-            "1574": {"nombre": "Moto B", "disponibilidad": "Disponible"},
-            "5158": {"nombre": "Moto C", "disponibilidad": "Disponible"}
+            "BOF12C": {"nombre": "Moto A", "disponibilidad": "Disponible"},
+            "NVO57B": {"nombre": "Moto B", "disponibilidad": "Disponible"},
+            "OJO158I": {"nombre": "Moto C", "disponibilidad": "Disponible"}
         }
     })
     
@@ -119,7 +119,6 @@ def Menu():
             if citas_encontradas:
                 print(f"\n--- Citas encontradas para el cliente: {nombre_cliente} ---")
                 for i, cita in enumerate(citas_encontradas, 1):
-                    # CORRECCIÓN 1: La línea estaba cortada, faltaba cerrar el string y el paréntesis de print
                     print(f"Cita {i}: Fecha: {cita['fecha']} | Hora: {cita['hora']} | Instructor asignado: {cita['instructor']} | Vehículo: {cita['placa']} ({cita['tipo']})")
             else:
                 print(f"No se encontró ninguna cita registrada a nombre de {nombre_cliente}.")
@@ -132,20 +131,13 @@ def Menu():
         
         
             while True:
-                # 1. Se le pide que ingrese la asistencia
                 asistencia = input(f"Ingrese la asistencia de {nombre_cliente} ('Presente' o 'Ausente'): ").strip().upper()
                 
-                # 2. JUSTO CUANDO INGRESA EL DATO, el programa verifica:
                 if asistencia == "PRESENTE" or asistencia == "AUSENTE":
-                    # Si escribió exactamente una de esas dos opciones (como string), el bucle se rompe y avanza.
                     break  
                 else:
-                    # Si escribió un número (ej: "1"), otra palabra (ej: "hola") o lo dejó vacío, 
-                    # le lanza el error inmediatamente y LE VUELVE A PREGUNTAR arriba.
                     print("❌ Error: Entrada inválida. Solo se admite escribir 'Presente' o 'Ausente'.\n")
-            # --------------------------------
-            
-            # 3. Solo si pasó la prueba anterior, llega a esta parte:
+
             observacion = input("Ingrese si tiene alguna observación del cliente: ").strip()
             
             registro = {"estado": asistencia, "observacion": observacion}
@@ -186,7 +178,6 @@ def Menu():
                  
                 elif vehiculo.get("instructor_asignado") != nombre_instructor:
                     instructor_actual = vehiculo.get('instructor_asignado')
-                    # CORRECCIÓN 3: La línea estaba cortada al final
                     print(f"❌ Error Acceso Denegado: No puedes liberar este vehículo porque está asignado a '{instructor_actual}'. (Tu nombre registrado es '{nombre_instructor}').")
                 
                 else:
