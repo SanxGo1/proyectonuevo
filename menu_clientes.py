@@ -91,16 +91,22 @@ def apartar_cita():
         
     
         citas = cargar_json("citas.json", [])
-
-        vehiculo_ocupado = any(
-            cita["placa"] == placa_elegida and 
-            cita["fecha"] == fecha.strftime("%d/%m/%Y") and 
-            cita["hora"] == hora.strftime("%H:%M") 
-            for cita in citas
-        )
+        minutos_nueva = hora.hour * 60 + hora.minute
+        vehiculo_ocupado = False
+        
+        for cita in citas:
+            if cita["placa"] == placa_elegida and cita["fecha"] == fecha.strftime("%d/%m/%Y"):
+                hora_guardada = datetime.strptime(cita["hora"], "%H:%M").time()
+                minutos_guardada = hora_guardada.hour * 60 + hora_guardada.minute
+                
+                diferencia = abs(minutos_nueva - minutos_guardada)
+                
+                if diferencia < 60:
+                    vehiculo_ocupado = True
+                    break
 
         if vehiculo_ocupado:
-            print("Error: El vehículo ya se encuentra reservado para esa fecha y hora.")
+            print("Error: El vehículo requiere al menos 1 hora de diferencia entre cada clase para esa fecha.")
             print("-" * 30)
             return
         
