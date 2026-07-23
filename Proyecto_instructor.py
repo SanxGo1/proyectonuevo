@@ -1,4 +1,5 @@
 from guardar_datos import cargar_json, guardar_json
+from datetime import datetime  # <-- NUEVA IMPORTACIÓN NECESARIA
 
 def Menu():
     datos_vehiculos = cargar_json("vehiculos.json", {
@@ -114,6 +115,7 @@ def Menu():
                         motos[placa]["instructor_asignado"] = nombre_instructor
                         guardar_json("vehiculos.json", datos_vehiculos) 
                         print(f"✅ Éxito: La {motos[placa]['nombre']} ha sido asignada al instructor {nombre_instructor}.")
+                        
                         citas = cargar_json("citas.json", [])
                         citas_modificadas = False
                         for cita in citas:
@@ -128,29 +130,60 @@ def Menu():
                     print("Error: La moto no está registrada en el sistema.")
             
         elif opcion == 3:
+            if not nombre_instructor:
+                print("Error: Primero debe registrar su nombre (Opción 1) para consultar sus citas.")
+                continue
+
             citas = cargar_json("citas.json", [])
             
             if not citas:
                 print("No hay citas registradas en el sistema actualmente.")
                 continue
-                
-            nombre_cliente = input("Registre el nombre del cliente para consultar la cita y la fecha: ").strip().upper()
-            citas_encontradas = [cita for cita in citas if cita["alumno"].upper() == nombre_cliente]
+
+            mis_citas = [cita for cita in citas if cita.get("instructor") == nombre_instructor]
             
-            if citas_encontradas:
-                print(f"\n--- Citas encontradas para el cliente: {nombre_cliente} ---")
-                for i, cita in enumerate(citas_encontradas, 1):
-                    print(f"Cita {i}: Fecha: {cita['fecha']} | Hora: {cita['hora']} | Instructor asignado: {cita['instructor']} | Vehículo: {cita['placa']} ({cita['tipo']})")
+            if not mis_citas:
+                print(f"No tiene citas asignadas actualmente, instructor {nombre_instructor}.")
+                continue
+
+            citas_pendientes = []
+            citas_terminadas = []
+            hoy = datetime.now().date()
+
+            for cita in mis_citas:
+                try:
+                    fecha_cita = datetime.strptime(cita["fecha"], "%d/%m/%Y").date()
+                    if fecha_cita >= hoy:
+                        citas_pendientes.append(cita)
+                    else:
+                        citas_terminadas.append(cita)
+                except ValueError:
+                    citas_pendientes.append(cita)
+
+            print(f"\n--- Historial de Citas (Instructor: {nombre_instructor}) ---")
+            
+            print("\n[ 🕒 CITAS PENDIENTES ]")
+            if citas_pendientes:
+                for i, cita in enumerate(citas_pendientes, 1):
+                    print(f"  {i}. Alumno: {cita.get('alumno', 'Desconocido')} | Fecha: {cita['fecha']} | Hora: {cita['hora']} | Vehículo: {cita['placa']}")
             else:
-                print(f"No se encontró ninguna cita registrada a nombre de {nombre_cliente}.")
+                print("  No tienes citas pendientes.")
+
+            print("\n[ ✅ CITAS TERMINADAS ]")
+            if citas_terminadas:
+                for i, cita in enumerate(citas_terminadas, 1):
+                    print(f"  {i}. Alumno: {cita.get('alumno', 'Desconocido')} | Fecha: {cita['fecha']} | Hora: {cita['hora']} | Vehículo: {cita['placa']}")
+            else:
+                print("  No tienes citas terminadas.")
+            print("-" * 50)
+            # -----------------------------
+
         elif opcion == 4:
             nombre_cliente = input("Ingrese el nombre del cliente: ").strip().upper()
             
             if nombre_cliente not in asistencias_por_cliente:
                 asistencias_por_cliente[nombre_cliente] = []
                 
-        
-        
             while True:
                 asistencia = input(f"Ingrese la asistencia de {nombre_cliente} ('Presente' o 'Ausente'): ").strip().upper()
                 
