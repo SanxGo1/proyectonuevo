@@ -92,6 +92,17 @@ def Menu():
                         carros[placa]["instructor_asignado"] = nombre_instructor
                         guardar_json("vehiculos.json", datos_vehiculos)
                         print(f"✅ Éxito: El {carros[placa]['nombre']} ha sido asignado al instructor {nombre_instructor}.")
+                        
+                        citas = cargar_json("citas.json", [])
+                        citas_modificadas = False
+                        for cita in citas:
+                            if cita.get("placa") == placa and cita.get("instructor") == "Sin asignar":
+                                cita["instructor"] = nombre_instructor
+                                citas_modificadas = True
+                        if citas_modificadas:
+                            guardar_json("citas.json", citas)
+                            print(f"✅ Sistema: Cita(s) vinculada(s) a la placa {placa} actualizadas con el instructor {nombre_instructor}.")
+
                 else:
                     print("Error: El carro no está registrado en el sistema.")
             elif registro_especialidad == "MOTO":
@@ -103,6 +114,16 @@ def Menu():
                         motos[placa]["instructor_asignado"] = nombre_instructor
                         guardar_json("vehiculos.json", datos_vehiculos) 
                         print(f"✅ Éxito: La {motos[placa]['nombre']} ha sido asignada al instructor {nombre_instructor}.")
+                        citas = cargar_json("citas.json", [])
+                        citas_modificadas = False
+                        for cita in citas:
+                            if cita.get("placa") == placa and cita.get("instructor") == "Sin asignar":
+                                cita["instructor"] = nombre_instructor
+                                citas_modificadas = True
+                        if citas_modificadas:
+                            guardar_json("citas.json", citas)
+                            print(f"✅ Sistema: Cita(s) vinculada(s) a la placa {placa} actualizadas con el instructor {nombre_instructor}.")
+
                 else:
                     print("Error: La moto no está registrada en el sistema.")
             
