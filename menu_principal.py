@@ -1,7 +1,21 @@
 from Proyecto_instructor import Menu
+from guardar_datos import cargar_json, guardar_json
 from menu_clientes import menuClientes
 
 def inicio():
+    datos_vehiculos = cargar_json("vehiculos.json", {
+            "carros": {
+                "ABC123": {"nombre": "Carro A", "disponibilidad": "Disponible"},
+                "BII678": {"nombre": "Carro B", "disponibilidad": "Disponible"},
+                "WTF101": {"nombre": "Carro C", "disponibilidad": "Disponible"}
+            },
+            "motos": {
+                "BOF12C": {"nombre": "Moto A", "disponibilidad": "Disponible"},
+                "NVO57B": {"nombre": "Moto B", "disponibilidad": "Disponible"},
+                "OJO158I": {"nombre": "Moto C", "disponibilidad": "Disponible"}
+            }
+        })
+    guardar_json("vehiculos.json", datos_vehiculos)
     while True:
         print("\n" + "*"*50)
         print(" BIENVENIDO AL SISTEMA DRIVESAFE ")

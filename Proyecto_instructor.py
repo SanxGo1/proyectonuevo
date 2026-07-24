@@ -1,23 +1,11 @@
 from guardar_datos import cargar_json, guardar_json
-from datetime import datetime  # <-- NUEVA IMPORTACIÓN NECESARIA
+from datetime import datetime 
 
 def Menu():
-    datos_vehiculos = cargar_json("vehiculos.json", {
-        "carros": {
-            "ABC123": {"nombre": "Carro A", "disponibilidad": "Disponible"},
-            "BII678": {"nombre": "Carro B", "disponibilidad": "Disponible"},
-            "WTF101": {"nombre": "Carro C", "disponibilidad": "Disponible"}
-        },
-        "motos": {
-            "BOF12C": {"nombre": "Moto A", "disponibilidad": "Disponible"},
-            "NVO57B": {"nombre": "Moto B", "disponibilidad": "Disponible"},
-            "OJO158I": {"nombre": "Moto C", "disponibilidad": "Disponible"}
-        }
-    })
-    
-    carros = datos_vehiculos["carros"]
-    motos = datos_vehiculos["motos"]
     asistencias_por_cliente = cargar_json("asistencias.json", {})
+    datos_vehiculos = cargar_json("vehiculos.json", {"carros": {}, "motos": {}})
+    carros = datos_vehiculos.get("carros", {})
+    motos = datos_vehiculos.get("motos", {})
     
     nombre_instructor = ""
     registro_especialidad = ""
@@ -82,7 +70,7 @@ def Menu():
                 print(f"Placa: {p} | Vehículo: {info['nombre']} | Estado: {estado} | Instructor actual: {instructor}")
             print("-" * 40)
                 
-            placa = input("\nIngrese la placa del vehiculo que desea registrar a su nombre: ").strip() 
+            placa = input("\nIngrese la placa del vehiculo que desea registrar a su nombre: ").strip().upper() 
             
             if registro_especialidad == "CARRO":
                 if placa in carros:
@@ -97,7 +85,7 @@ def Menu():
                         citas = cargar_json("citas.json", [])
                         citas_modificadas = False
                         for cita in citas:
-                            if cita.get("placa") == placa and cita.get("instructor") == "Sin asignar":
+                            if cita.get("placa") == placa and cita.get("instructor") == "Pendiente de asignar":
                                 cita["instructor"] = nombre_instructor
                                 citas_modificadas = True
                         if citas_modificadas:
@@ -119,7 +107,7 @@ def Menu():
                         citas = cargar_json("citas.json", [])
                         citas_modificadas = False
                         for cita in citas:
-                            if cita.get("placa") == placa and cita.get("instructor") == "Sin asignar":
+                            if cita.get("placa") == placa and cita.get("instructor") == "Pendiente de asignar":
                                 cita["instructor"] = nombre_instructor
                                 citas_modificadas = True
                         if citas_modificadas:
@@ -176,10 +164,15 @@ def Menu():
             else:
                 print("  No tienes citas terminadas.")
             print("-" * 50)
-            # -----------------------------
 
         elif opcion == 4:
             nombre_cliente = input("Ingrese el nombre del cliente: ").strip().upper()
+            clientes = cargar_json("clientes.json", {})
+            nombres_registrados = [datos["nombre"] for datos in clientes.values()]
+            
+            if nombre_cliente not in nombres_registrados:
+                print(f"❌ Error: El alumno '{nombre_cliente}' no está registrado en la base de datos.")
+                continue
             
             if nombre_cliente not in asistencias_por_cliente:
                 asistencias_por_cliente[nombre_cliente] = []
@@ -222,7 +215,7 @@ def Menu():
                 print(f"Placa: {p} | Vehículo: {info['nombre']} | Estado: {estado} | Instructor actual: {instructor}")
             print("-" * 40)
             
-            placa_liberar = input("Ingrese la placa del vehículo que desea liberar: ").strip()
+            placa_liberar = input("Ingrese la placa del vehículo que desea liberar: ").strip().upper()
             
             if placa_liberar in vehiculos_mostrar:
                 vehiculo = vehiculos_mostrar[placa_liberar]

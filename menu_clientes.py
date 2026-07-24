@@ -1,29 +1,34 @@
 from guardar_datos import cargar_json, guardar_json
 from datetime import datetime
+
 def registrar_alumno():
     try:
         print("\n--- Registro de Alumno ---")
+        clientes = cargar_json("clientes.json", {})
+        
         nombre = input("Ingrese su nombre completo: ").strip().upper()
+        
+        if not nombre.replace(" ", "").isalpha():
+            raise ValueError("Error: El nombre solo puede contener letras, sin números ni caracteres especiales.")
+            
         nombres_registrados = [datos["nombre"] for datos in clientes.values()]
         if nombre in nombres_registrados:
             raise ValueError("Error: Este nombre ya se encuentra registrado en el sistema. Intente con otro o verifique si ya tiene cuenta.")
-        if not nombre.replace(" ", "").isalpha():
-            raise ValueError("Error: El nombre solo puede contener letras, sin números ni caracteres especiales.")
+            
         documento = input("Ingrese su documento de identidad: ").strip()
-        if not documento.isdigit():
-            raise  ValueError("Error no puede haber letras en el documento")
-        clientes = cargar_json("clientes.json", {})
         
+        if not documento.isdigit():
+            raise ValueError("Error: El documento solo puede contener números.")
+            
         if documento in clientes:
-            print("¡Usted ya se encuentra registrado en el sistema!")
-        else:
-            clientes[documento] = {"nombre": nombre}
-            guardar_json("clientes.json", clientes)
-            print(f"¡Registro exitoso! Bienvenido a DriveSafe, {nombre}.")
+            raise ValueError("Error: ¡Este documento ya se encuentra registrado en el sistema!")
+        clientes[documento] = {"nombre": nombre}
+        guardar_json("clientes.json", clientes)
+        print(f"¡Registro exitoso! Bienvenido a DriveSafe, {nombre}.")
+        
     except ValueError as e:
         print(f"{e}")
     
-
 
 def apartar_cita():
     try:
@@ -73,9 +78,15 @@ def apartar_cita():
             print("Error: La placa ingresada no existe en la lista.")
             print("-"*30)
             return
+            
         while True:
             try:    
-                fecha=datetime.strptime(input("Introduce la fecha (DD/MM/AAAA): "), "%d/%m/%Y").date()
+                fecha = datetime.strptime(input("Introduce la fecha (DD/MM/AAAA): "), "%d/%m/%Y").date()
+                if fecha < datetime.now().date():
+                    print("Error: No puedes agendar citas en fechas pasadas.")
+                    print("-" * 30)
+                    continue
+                
                 print("¡Fecha guardada con éxito!")
                 print("Fecha registrada:", fecha.strftime("%d/%m/%Y"))
                 print("-"*30)
@@ -83,6 +94,7 @@ def apartar_cita():
             except ValueError:
                 print("¡Error! La fecha contiene letras, faltan números o el formato no es DD/MM/AAAA.")
                 print("-"*30)
+                
         while True:
             try:
                 hora = datetime.strptime(input("Introduce la hora (HH:MM): "), "%H:%M").time()
@@ -96,7 +108,6 @@ def apartar_cita():
                 print("¡Error! Hora incorrecta. No uses letras y respeta el formato HH:MM (ej: 14:00).")
                 print("-"*30)
         
-    
         citas = cargar_json("citas.json", [])
         minutos_nueva = hora.hour * 60 + hora.minute
         vehiculo_ocupado = False
@@ -128,9 +139,7 @@ def apartar_cita():
         }
         
         citas.append(nueva_cita)
-        print("DEBUG: Intentando guardar en el JSON...")
         guardar_json("citas.json", citas)
-        print("DEBUG: ¡Guardado con éxito en el archivo!")
         print("\n¡Cita agendada con éxito!")
         print(f"Detalles: {fecha.strftime('%d/%m/%Y')} a las {hora.strftime('%H:%M')} - Vehículo: {placa_elegida}")
         print("-"*30)
